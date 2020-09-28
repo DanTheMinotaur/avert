@@ -1620,4 +1620,33 @@ describe('registration and functionality', () => {
             expect(err).to.not.exist();
         }
     });
+
+
+    it('File uploads for payload', async () => {
+        await server.register({ plugin: Avert, options: { avertPayload: true } })
+
+        server.route({
+            method: 'POST',
+            path: '/payloadFile',
+            handler: (request, h) => {
+                return !!request.payload.file;
+            },
+            options: {
+                payload: {
+                    output: 'stream',
+                    parse: true
+                }
+            }
+        });
+
+        const fileContents = fs.readFileSync(Path.join(__dirname, 'resources/test_image.jpg'))
+        const res = await server.inject({
+            method: 'POST',
+            url: '/payloadFile',
+            payload: { file: fileContents, content: 'hello' }
+        });
+
+        expect(res.statusCode).to.be.equal(200);
+
+    });
 });
