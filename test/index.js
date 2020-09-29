@@ -1655,7 +1655,6 @@ describe('registration and functionality', () => {
 
         const fileContents = fs.readFileSync(Path.join(__dirname, 'resources/test_image.jpg'))
 
-        // Avert Payload causes 500 error when active.
         await server.register({ plugin: Avert, options: { avertPayload: true }});
 
         let res = await server.inject({
