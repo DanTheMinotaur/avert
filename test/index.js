@@ -1696,7 +1696,7 @@ describe('registration and functionality', () => {
 
         const fileContents = fs.readFileSync(Path.join(__dirname, 'resources/test_image.jpg'))
 
-        await server.register({ plugin: Avert, options: { avertPayload: true, skipFileUploads: true } });
+        await server.register({ plugin: Avert, options: { avertPayload: true }});
 
         console.log('/payloadFileStream')
         let res = await server.inject({
