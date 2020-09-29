@@ -13,6 +13,8 @@ const expect = Code.expect;
 const beforeEach = lab.beforeEach;
 const afterEach = lab.afterEach;
 const it = lab.it;
+const fs = require('fs');
+const Path = require('path');
 
 describe('registration and functionality', () => {
     let server;
@@ -1621,32 +1623,96 @@ describe('registration and functionality', () => {
         }
     });
 
-
-    it('File uploads for payload', async () => {
-        await server.register({ plugin: Avert, options: { avertPayload: true } })
-
-        server.route({
-            method: 'POST',
-            path: '/payloadFile',
-            handler: (request, h) => {
-                return !!request.payload.file;
+    it('File uploads for "data" and "file"', async () => {
+        server.route([
+            {
+                method: 'POST',
+                path: '/payloadFileFile',
+                handler: (request, h) => {
+                    return !!request.payload.file;
+                },
+                options: {
+                    payload: {
+                        output: 'file',
+                        parse: true
+                    }
+                }
             },
-            options: {
-                payload: {
-                    output: 'stream',
-                    parse: true
+            {
+                method: 'POST',
+                path: '/payloadFileData',
+                handler: (request, h) => {
+                    return !!request.payload.file;
+                },
+                options: {
+                    payload: {
+                        output: 'data',
+                        parse: true
+                    }
                 }
             }
-        });
+        ]);
 
         const fileContents = fs.readFileSync(Path.join(__dirname, 'resources/test_image.jpg'))
-        const res = await server.inject({
+
+        // Avert Payload causes 500 error when active.
+        await server.register({ plugin: Avert, options: { avertPayload: true }});
+
+        let res = await server.inject({
             method: 'POST',
-            url: '/payloadFile',
-            payload: { file: fileContents, content: 'hello' }
+            url: '/payloadFileFile',
+            payload: fileContents
         });
 
         expect(res.statusCode).to.be.equal(200);
 
+        res = await server.inject({
+            method: 'POST',
+            url: '/payloadFileData',
+            payload: {
+                file: fileContents
+            }
+        });
+
+        expect(res.statusCode).to.be.equal(200);
+    });
+
+    it('File uploads with skipFileUploads active', async () => {
+        server.route([
+            {
+                method: 'POST',
+                path: '/payloadFileStream',
+                handler: (request, h) => {
+                    return !!request.payload.file;
+                },
+                options: {
+                    payload: {
+                        output: 'stream',
+                        parse: true
+                    }
+                }
+            }
+        ]);
+
+        const fileContents = fs.readFileSync(Path.join(__dirname, 'resources/test_image.jpg'))
+
+        await server.register({ plugin: Avert, options: { avertPayload: true, skipFileUploads: true } });
+
+        console.log('/payloadFileStream')
+        let res = await server.inject({
+            method: 'POST',
+            url: '/payloadFileStream',
+            payload: fileContents
+        });
+
+        expect(res.statusCode).to.be.equal(200);
+
+        res = await server.inject({
+            method: 'POST',
+            url: '/payloadFileStream',
+            payload: { file: fileContents, extra: 'hi' }
+        });
+
+        expect(res.statusCode).to.be.equal(200);
     });
 });
