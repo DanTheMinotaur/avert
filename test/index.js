@@ -1653,9 +1653,16 @@ describe('registration and functionality', () => {
             }
         ]);
 
-        const fileContents = fs.readFileSync(Path.join(__dirname, 'resources/test_image.jpg'))
+        const fileContents = fs.readFileSync(
+            Path.join(__dirname, 'resources/test_image.jpg')
+        );
 
-        await server.register({ plugin: Avert, options: { avertPayload: true }});
+        await server.register({
+            plugin: Avert,
+            options: {
+                avertPayload: true
+            }
+        });
 
         let res = await server.inject({
             method: 'POST',
@@ -1696,11 +1703,19 @@ describe('registration and functionality', () => {
             }
         ]);
 
-        const fileContents = fs.readFileSync(Path.join(__dirname, 'resources/test_image.jpg'))
+        const fileContents = fs.readFileSync(
+            Path.join(__dirname, 'resources/test_image.jpg')
+        );
 
-        await server.register({ plugin: Avert, options: { avertPayload: true }});
-        let res
-        console.log('/payloadFileStream')
+        await server.register({
+            plugin: Avert,
+            options: {
+                avertPayload: true
+            }
+        });
+
+        let res;
+
         res = await server.inject({
             method: 'POST',
             url: '/payloadFileStream',
@@ -1714,8 +1729,6 @@ describe('registration and functionality', () => {
             url: '/payloadFileStream',
             payload: { file: fileContents, extra: 'hi' }
         });
-
-        console.log(res.result)
 
         expect(res.statusCode).to.be.equal(200);
     });
