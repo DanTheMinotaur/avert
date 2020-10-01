@@ -1691,9 +1691,6 @@ describe('registration and functionality', () => {
                 path: '/payloadFileStream',
                 handler: (request, h) => {
                     return request.payload;
-                    // const data = request.payload
-                    // console.log({ data })
-                    // return data;
                 },
                 options: {
                     payload: {
@@ -1724,27 +1721,5 @@ describe('registration and functionality', () => {
         });
 
         expect(res.statusCode).to.be.equal(200);
-
-        // res = await server.inject({
-        //     method: 'POST',
-        //     url: '/payloadFileStream',
-        //     payload: { file: fileContents, extra: 'hi' }
-        // });
-        //
-        // expect(res.statusCode).to.be.equal(200);
-        //
-        // const form = new FormData()
-        // form.append('file', fileContents.bu);
-        // form.append('extra', 'hi');
-        //
-        // res = await server.inject({
-        //     method: 'POST',
-        //     url: '/payloadFileStream',
-        //     headers: form.getHeaders(),
-        //     payload: form
-        // })
-        //
-        //
-        // expect(res.statusCode).to.be.equal(200);
     });
 });
